@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nutrution/features/camera.dart';
+import 'package:nutrution/features/camera/camera.dart';
 
 import 'features/home.dart';
 import 'features/settings/views/support/support.dart';

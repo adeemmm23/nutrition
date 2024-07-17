@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../global/state/color_bloc.dart';
 import '../../global/state/theme_bloc.dart';
@@ -34,7 +35,7 @@ class _SettingsState extends State<Settings> {
                 weight: 700,
               ),
               leading: const Icon(Symbols.key_rounded, weight: 700),
-              title: 'Change account password',
+              title: 'Change profile',
               onTap: () {},
             ),
             const SettingsDivider(),
@@ -42,7 +43,7 @@ class _SettingsState extends State<Settings> {
               trailing: const Icon(Symbols.arrow_forward_rounded, weight: 700),
               leading: const Icon(Symbols.lock_rounded, weight: 700),
               title: 'Logout',
-              onTap: () => context.go('/authentication'),
+              onTap: () {},
             ),
           ],
         ),
@@ -75,6 +76,18 @@ class _SettingsState extends State<Settings> {
         const SettingsTitle('Support'),
         SettingsCard(
           children: [
+            SettingsListTile(
+              trailing: const Icon(Symbols.arrow_forward_rounded, weight: 700),
+              leading: const Icon(Symbols.router, weight: 700),
+              title: 'Change IP',
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => SettingsIP(),
+                );
+              },
+            ),
+            const SettingsDivider(),
             SettingsListTile(
               trailing: const Icon(Symbols.arrow_forward_rounded, weight: 700),
               leading: const Icon(Symbols.privacy_tip_rounded, weight: 700),
@@ -267,6 +280,101 @@ class _SettingsColorState extends State<SettingsColor> {
             _selected = value;
           });
         },
+      ),
+    );
+  }
+}
+
+class SettingsIP extends StatefulWidget {
+  const SettingsIP({super.key});
+
+  @override
+  State<SettingsIP> createState() => _SettingsIPState();
+}
+
+class _SettingsIPState extends State<SettingsIP> {
+  final TextEditingController textController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  void submit() async {
+    if (!formKey.currentState!.validate()) return;
+    final ip = textController.text;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('ip', ip);
+    if (mounted) context.pop();
+  }
+
+  String? ipValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter an IP address';
+    }
+
+    // Regular expression for validating IPv4 addresses
+    final ipv4Pattern = RegExp(
+      r'^(\d{1,3}\.){3}\d{1,3}$',
+    );
+
+    if (!ipv4Pattern.hasMatch(value)) {
+      return 'Please enter a valid IPv4 address';
+    }
+
+    // Further check if each segment of IPv4 is between 0 and 255
+    final segments = value.split('.');
+    for (var segment in segments) {
+      final number = int.tryParse(segment);
+      if (number == null || number < 0 || number > 255) {
+        return 'Please enter a valid IPv4 address';
+      }
+    }
+
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: 10,
+        left: 10,
+        right: 10,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Form(
+            key: formKey,
+            child: TextFormField(
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              onFieldSubmitted: (_) => submit(),
+              validator: ipValidator,
+              textAlignVertical: TextAlignVertical.center,
+              controller: textController,
+              decoration: InputDecoration(
+                errorStyle: TextStyle(
+                    // align center
+
+                    ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: IconButton(
+                    onPressed: submit,
+                    icon: const Icon(Icons.arrow_right),
+                  ),
+                ),
+                hintText: 'Change IP Address',
+                filled: true,
+                fillColor:
+                    Theme.of(context).colorScheme.background.withAlpha(90),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
