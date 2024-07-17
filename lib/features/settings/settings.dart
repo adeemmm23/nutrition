@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
+import '../../global/state/color_bloc.dart';
+import '../../global/state/theme_bloc.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -30,14 +34,14 @@ class _SettingsState extends State<Settings> {
                 weight: 700,
               ),
               leading: const Icon(Symbols.key_rounded, weight: 700),
-              title: 'Change Master Key',
+              title: 'Change account password',
               onTap: () {},
             ),
             const SettingsDivider(),
             SettingsListTile(
               trailing: const Icon(Symbols.arrow_forward_rounded, weight: 700),
               leading: const Icon(Symbols.lock_rounded, weight: 700),
-              title: 'Lock',
+              title: 'Logout',
               onTap: () => context.go('/authentication'),
             ),
           ],
@@ -45,27 +49,27 @@ class _SettingsState extends State<Settings> {
         const SettingsTitle('Visuals'),
         SettingsCard(
           children: [
-            // const SettingsListTile(
-            //   leading: Icon(Symbols.color_lens_rounded, weight: 700),
-            //   title: 'Change Theme',
-            // ),
-            // const SettingsColor(),
-            // const SettingsDivider(),
-            // SettingsListTile(
-            //   trailing: Switch(
-            //     thumbIcon: const MaterialStatePropertyAll(
-            //       Icon(Symbols.dark_mode_rounded, weight: 700),
-            //     ),
-            //     value: context.watch<ThemeCubit>().state == ThemeMode.dark,
-            //     onChanged: (value) {
-            //       context.read<ThemeCubit>().toggleThemeMode(
-            //             value ? ThemeState.dark : ThemeState.light,
-            //           );
-            //     },
-            //   ),
-            //   leading: const Icon(Symbols.dark_mode_rounded, weight: 700),
-            //   title: 'Dark Mode',
-            // ),
+            const SettingsListTile(
+              leading: Icon(Symbols.color_lens_rounded, weight: 700),
+              title: 'Change Theme',
+            ),
+            const SettingsColor(),
+            const SettingsDivider(),
+            SettingsListTile(
+              trailing: Switch(
+                thumbIcon: const MaterialStatePropertyAll(
+                  Icon(Symbols.dark_mode_rounded, weight: 700),
+                ),
+                value: context.watch<ThemeCubit>().state == ThemeMode.dark,
+                onChanged: (value) {
+                  context.read<ThemeCubit>().toggleThemeMode(
+                        value ? ThemeState.dark : ThemeState.light,
+                      );
+                },
+              ),
+              leading: const Icon(Symbols.dark_mode_rounded, weight: 700),
+              title: 'Dark Mode',
+            ),
           ],
         ),
         const SettingsTitle('Support'),
@@ -186,84 +190,84 @@ class SettingsVerion extends StatelessWidget {
   }
 }
 
-// class SettingsColor extends StatefulWidget {
-//   const SettingsColor({super.key});
+class SettingsColor extends StatefulWidget {
+  const SettingsColor({super.key});
 
-//   @override
-//   State<SettingsColor> createState() => _SettingsColorState();
-// }
+  @override
+  State<SettingsColor> createState() => _SettingsColorState();
+}
 
-// class _SettingsColorState extends State<SettingsColor> {
-//   Set<ColorState> _selected = {};
+class _SettingsColorState extends State<SettingsColor> {
+  Set<ColorState> _selected = {};
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.only(top: 1, bottom: 20),
-//       child: SegmentedButton(
-//         emptySelectionAllowed: true,
-//         showSelectedIcon: false,
-//         selected: _selected,
-//         segments: [
-//           ButtonSegment(
-//             value: ColorState.red,
-//             label: Icon(
-//               Symbols.circle,
-//               fill: 1,
-//               color: Theme.of(context).brightness == Brightness.dark
-//                   ? Colors.red.shade200
-//                   : Colors.red.shade400,
-//             ),
-//           ),
-//           ButtonSegment(
-//             value: ColorState.teal,
-//             label: Icon(
-//               Symbols.circle,
-//               fill: 1,
-//               color: Theme.of(context).brightness == Brightness.dark
-//                   ? Colors.teal.shade200
-//                   : Colors.teal.shade400,
-//             ),
-//           ),
-//           ButtonSegment(
-//             value: ColorState.blue,
-//             label: Icon(
-//               Symbols.circle,
-//               fill: 1,
-//               color: Theme.of(context).brightness == Brightness.dark
-//                   ? Colors.blue.shade200
-//                   : Colors.blue.shade400,
-//             ),
-//           ),
-//           ButtonSegment(
-//             value: ColorState.purple,
-//             label: Icon(
-//               Symbols.circle,
-//               fill: 1,
-//               color: Theme.of(context).brightness == Brightness.dark
-//                   ? Colors.purple.shade200
-//                   : Colors.purple.shade400,
-//             ),
-//           ),
-//           ButtonSegment(
-//             value: ColorState.orange,
-//             label: Icon(
-//               Symbols.circle,
-//               fill: 1,
-//               color: Theme.of(context).brightness == Brightness.dark
-//                   ? Colors.orangeAccent.shade200
-//                   : Colors.orangeAccent.shade400,
-//             ),
-//           ),
-//         ],
-//         onSelectionChanged: (value) {
-//           if (value.isEmpty) return;
-//           context.read<ColorCubit>().setColors(value.last);
-//           setState(() {
-//             _selected = value;
-//           });
-//         },
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 1, bottom: 20),
+      child: SegmentedButton(
+        emptySelectionAllowed: true,
+        showSelectedIcon: false,
+        selected: _selected,
+        segments: [
+          ButtonSegment(
+            value: ColorState.red,
+            label: Icon(
+              Symbols.circle,
+              fill: 1,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.red.shade200
+                  : Colors.red.shade400,
+            ),
+          ),
+          ButtonSegment(
+            value: ColorState.teal,
+            label: Icon(
+              Symbols.circle,
+              fill: 1,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.teal.shade200
+                  : Colors.teal.shade400,
+            ),
+          ),
+          ButtonSegment(
+            value: ColorState.blue,
+            label: Icon(
+              Symbols.circle,
+              fill: 1,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.blue.shade200
+                  : Colors.blue.shade400,
+            ),
+          ),
+          ButtonSegment(
+            value: ColorState.purple,
+            label: Icon(
+              Symbols.circle,
+              fill: 1,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.purple.shade200
+                  : Colors.purple.shade400,
+            ),
+          ),
+          ButtonSegment(
+            value: ColorState.orange,
+            label: Icon(
+              Symbols.circle,
+              fill: 1,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.orangeAccent.shade200
+                  : Colors.orangeAccent.shade400,
+            ),
+          ),
+        ],
+        onSelectionChanged: (value) {
+          if (value.isEmpty) return;
+          context.read<ColorCubit>().setColors(value.last);
+          setState(() {
+            _selected = value;
+          });
+        },
+      ),
+    );
+  }
+}

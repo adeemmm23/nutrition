@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:nutrution/components/rounded_appbar.dart';
 import '../main.dart';
 
 class CameraApp extends StatefulWidget {
@@ -106,6 +107,10 @@ class _CameraAppState extends State<CameraApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: RoundedAppBar(title: 'Scan'),
+      ),
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(20),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nutrution/features/camera.dart';
 
 import 'features/home.dart';
+import 'features/settings/views/support/support.dart';
 
 class AppRouter {
   late final router = GoRouter(
@@ -21,6 +22,13 @@ class AppRouter {
         pageBuilder: (context, state) => const MaterialPage(
           name: 'camera',
           child: CameraApp(),
+        ),
+      ),
+      GoRoute(
+        path: '/support',
+        pageBuilder: (context, state) => const MaterialPage(
+          name: 'support',
+          child: Support(),
         ),
       ),
     ],
