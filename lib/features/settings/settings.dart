@@ -295,17 +295,32 @@ class SettingsIP extends StatefulWidget {
 class _SettingsIPState extends State<SettingsIP> {
   final TextEditingController textController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String currentIP = 'Tap to change';
 
   void submit() async {
-    if (!formKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) {
+      setState(() {
+        currentIP = 'Invalid IP address';
+      });
+      return;
+    }
     final ip = textController.text;
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('ip', ip);
-    if (mounted) {
-      context.pop();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('IP address changed successfully!'),
-      ));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('ip', ip);
+      if (mounted) {
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('IP address changed successfully!'),
+        ));
+      }
+    } on Exception catch (_) {
+      if (mounted) {
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to change IP address!'),
+        ));
+      }
     }
   }
 
@@ -314,25 +329,34 @@ class _SettingsIPState extends State<SettingsIP> {
       return 'Please enter an IP address';
     }
 
-    // Regular expression for validating IPv4 addresses
     final ipv4Pattern = RegExp(
       r'^(\d{1,3}\.){3}\d{1,3}$',
     );
 
     if (!ipv4Pattern.hasMatch(value)) {
-      return 'Please enter a valid IPv4 address';
+      return 'Please enter a valid IP address';
     }
 
-    // Further check if each segment of IPv4 is between 0 and 255
     final segments = value.split('.');
-    for (var segment in segments) {
+
+    for (final segment in segments) {
       final number = int.tryParse(segment);
       if (number == null || number < 0 || number > 255) {
-        return 'Please enter a valid IPv4 address';
+        return 'Please enter a valid IP address';
       }
     }
-
     return null;
+  }
+
+  @override
+  void initState() {
+    SharedPreferences.getInstance().then(
+      (value) => setState(() {
+        final oldIP = value.getString('ip');
+        currentIP = oldIP == null ? currentIP : 'Current IP: $oldIP';
+      }),
+    );
+    super.initState();
   }
 
   @override
@@ -357,6 +381,7 @@ class _SettingsIPState extends State<SettingsIP> {
               textAlignVertical: TextAlignVertical.center,
               controller: textController,
               decoration: InputDecoration(
+                errorStyle: const TextStyle(fontSize: 0.01),
                 suffixIcon: Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: IconButton(
@@ -374,6 +399,13 @@ class _SettingsIPState extends State<SettingsIP> {
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            currentIP,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
           ),
         ],
       ),

@@ -1,14 +1,16 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:camera/camera.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-import 'package:nutrution/components/rounded_appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../components/rounded_appbar.dart';
 import '../../main.dart';
 import 'components/bottom_sheet.dart';
 
@@ -21,9 +23,20 @@ class CameraApp extends StatefulWidget {
 
 class _CameraAppState extends State<CameraApp> {
   late CameraController controller;
+  bool isShooting = false;
+  bool isSending = false;
 
   Future<String> takePicture() async {
     try {
+      setState(() {
+        isShooting = true;
+        isSending = true;
+        Future.delayed(const Duration(milliseconds: 10), () {
+          setState(() {
+            isShooting = false;
+          });
+        });
+      });
       final image = await controller.takePicture();
       return image.path;
     } catch (e) {
@@ -57,14 +70,22 @@ class _CameraAppState extends State<CameraApp> {
       if (response.statusCode != 200) return 'wrong';
       final data = await response.stream.bytesToString();
       print(data);
+      setState(() {
+        isSending = false;
+      });
       return data;
     } on Exception catch (_) {
+      setState(() {
+        isSending = false;
+      });
       return 'error';
     }
   }
 
   void handleCamera() async {
+    if (isSending) return;
     final imagePath = await takePicture();
+
     final prefs = await SharedPreferences.getInstance();
     final ip = prefs.getString('ip') ?? '';
     if (ip.isEmpty) return;
@@ -99,7 +120,7 @@ class _CameraAppState extends State<CameraApp> {
     final junk = prefs.getString('history') ?? "[]";
     final List history = jsonDecode(junk);
 
-    history.add({
+    history.insert(0, {
       'date': DateTime.now().toString(),
       'data': extractedData,
       'health': healthEvaluation,
@@ -169,18 +190,128 @@ class _CameraAppState extends State<CameraApp> {
               margin: const EdgeInsets.only(
                   top: 10, bottom: 30, right: 20, left: 20),
               decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              clipBehavior: Clip.antiAlias,
-              child: CameraPreview(controller),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 50),
-              child: IconButton.filled(
-                iconSize: 40,
-                onPressed: handleCamera,
-                icon: const Icon(Symbols.circle_rounded),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
-            )
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CameraPreview(
+                    controller,
+                    child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 50),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton.filledTonal(
+                                iconSize: 25,
+                                onPressed: () {
+                                  controller.setFlashMode(
+                                    controller.value.flashMode == FlashMode.off
+                                        ? FlashMode.torch
+                                        : FlashMode.off,
+                                  );
+                                },
+                                icon: const Icon(
+                                  Symbols.flashlight_on,
+                                  fill: 1,
+                                  opticalSize: 48,
+                                  grade: 200,
+                                  weight: 700,
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              IconButton.filledTonal(
+                                iconSize: 40,
+                                onPressed: handleCamera,
+                                icon: isSending
+                                    ? SizedBox(
+                                        width: 40,
+                                        height: 40,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 4.5,
+                                          strokeCap: StrokeCap.round,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Symbols.circle,
+                                        fill: 1,
+                                        opticalSize: 48,
+                                        grade: 200,
+                                        weight: 700,
+                                      ),
+                              ),
+                              const SizedBox(width: 20),
+                              IconButton.filledTonal(
+                                iconSize: 25,
+                                onPressed: () {
+                                  // toggle camera
+                                  if (controller.description.lensDirection ==
+                                      CameraLensDirection.front) {
+                                    controller = CameraController(
+                                        cameras[0], ResolutionPreset.high);
+                                    controller.initialize().then((_) {
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      setState(() {});
+                                    }).catchError((Object e) {
+                                      if (e is CameraException) {
+                                        switch (e.code) {
+                                          case 'CameraAccessDenied':
+                                            // Handle access errors here.
+                                            break;
+                                          default:
+                                            // Handle other errors here.
+                                            break;
+                                        }
+                                      }
+                                    });
+                                  } else {
+                                    controller = CameraController(
+                                        cameras[1], ResolutionPreset.high);
+                                    controller.initialize().then((_) {
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      setState(() {});
+                                    }).catchError((Object e) {
+                                      if (e is CameraException) {
+                                        switch (e.code) {
+                                          case 'CameraAccessDenied':
+                                            // Handle access errors here.
+                                            break;
+                                          default:
+                                            // Handle other errors here.
+                                            break;
+                                        }
+                                      }
+                                    });
+                                  }
+                                },
+                                icon: const Icon(
+                                  Symbols.flip_camera_android,
+                                  fill: 1,
+                                  opticalSize: 48,
+                                  grade: 200,
+                                  weight: 700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  Container(
+                    color: isShooting ? Colors.black.withOpacity(0.5) : null,
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),

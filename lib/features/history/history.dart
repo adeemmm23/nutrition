@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,22 +59,36 @@ class _HistoryState extends State<History> {
           }
           List<Map<String, dynamic>> histories = snapshot.data!;
           return RefreshIndicator(
+            displacement: 20,
             onRefresh: () async {
               setState(() {});
             },
             child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 30, left: 10, bottom: 20),
+                  child: Text('History',
+                      style: Theme.of(context).textTheme.displaySmall),
+                ),
                 for (final history in histories)
                   Card(
+                    clipBehavior: Clip.antiAlias,
                     shadowColor: Colors.transparent,
                     child: ListTile(
-                      title: Text(history['date']),
+                      title: Text(
+                        DateFormat.yMMMMd()
+                            .format(DateTime.parse(history['date'])),
+                      ),
+                      subtitle: Text(DateFormat.Hm()
+                          .format(DateTime.parse(history['date']))),
                       onTap: () {
                         handleBottomSheet(
                             context, history['data'], history['health']);
                       },
                     ),
-                  )
+                  ),
+                const SizedBox(height: 4),
               ],
             ),
           );
