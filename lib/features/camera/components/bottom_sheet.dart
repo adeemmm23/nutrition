@@ -12,23 +12,46 @@ class DataBottomSheet extends StatelessWidget {
       expand: false,
       snap: true,
       shouldCloseOnMinExtent: false,
+      snapSizes: const [0.5],
+      snapAnimationDuration: const Duration(milliseconds: 200),
       builder: (context, scrollController) => ListView(
         controller: scrollController,
         children: [
-          const Text('Extracted Data'),
+          const DataTitle('Extracted Data'),
           for (var key in extractedData.keys)
             ListTile(
-              title: Text(key),
+              title: Text(key.replaceAll('_', ' ').toLowerCase()),
               subtitle: Text(extractedData[key]),
             ),
-          const Text('Health Evaluation'),
+          const Divider(
+            endIndent: 30,
+            indent: 30,
+            height: 40,
+          ),
+          const DataTitle('Health Evaluation'),
           for (var key in healthEvaluation.keys)
             ListTile(
-              title: Text(key),
-              subtitle: Text(healthEvaluation[key]),
+              title: Text(key.replaceAll('_', ' ').toLowerCase()),
+              subtitle: Text(healthEvaluation[key] ?? 'N/A'),
             ),
         ],
       ),
+    );
+  }
+}
+
+class DataTitle extends StatelessWidget {
+  const DataTitle(this.text, {super.key});
+
+  final String text;
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
     );
   }
 }

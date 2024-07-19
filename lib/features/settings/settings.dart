@@ -301,7 +301,12 @@ class _SettingsIPState extends State<SettingsIP> {
     final ip = textController.text;
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('ip', ip);
-    if (mounted) context.pop();
+    if (mounted) {
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('IP address changed successfully!'),
+      ));
+    }
   }
 
   String? ipValidator(String? value) {
@@ -352,10 +357,6 @@ class _SettingsIPState extends State<SettingsIP> {
               textAlignVertical: TextAlignVertical.center,
               controller: textController,
               decoration: InputDecoration(
-                errorStyle: TextStyle(
-                    // align center
-
-                    ),
                 suffixIcon: Padding(
                   padding: const EdgeInsets.only(right: 10),
                   child: IconButton(

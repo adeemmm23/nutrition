@@ -66,7 +66,7 @@ class MainApp extends StatelessWidget {
           return BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, themeMode) {
             return MaterialApp.router(
-              title: 'Lock',
+              title: 'Nutrition Guide',
               debugShowCheckedModeBanner: false,
               themeAnimationCurve: Curves.easeInOut,
               theme: ThemeData(
