@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'features/camera/camera.dart';
 import 'features/home.dart';
+import 'features/privacy/privacy.dart';
 import 'features/settings/views/support/support.dart';
 
 class AppRouter {
@@ -21,6 +22,7 @@ class AppRouter {
         path: '/camera',
         pageBuilder: (context, state) => const MaterialPage(
           name: 'camera',
+          fullscreenDialog: true,
           child: CameraApp(),
         ),
       ),
@@ -29,6 +31,13 @@ class AppRouter {
         pageBuilder: (context, state) => const MaterialPage(
           name: 'support',
           child: Support(),
+        ),
+      ),
+      GoRoute(
+        path: '/privacy',
+        pageBuilder: (context, state) => const MaterialPage(
+          name: 'privacy',
+          child: Privacy(),
         ),
       ),
     ],

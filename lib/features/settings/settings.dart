@@ -83,7 +83,7 @@ class _SettingsState extends State<Settings> {
               onTap: () {
                 showModalBottomSheet(
                   context: context,
-                  builder: (context) => SettingsIP(),
+                  builder: (context) => const SettingsIP(),
                 );
               },
             ),
@@ -93,9 +93,10 @@ class _SettingsState extends State<Settings> {
               leading: const Icon(Symbols.privacy_tip_rounded, weight: 700),
               title: 'Privacy Policy',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Your informations are safe! Don\'t worry :)'),
-                ));
+                // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                //   content: Text('Your informations are safe! Don\'t worry :)'),
+                // ));
+                context.push('/privacy');
               },
             ),
             const SettingsDivider(),
