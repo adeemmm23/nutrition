@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,52 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
+  String gender = 'woman';
+  String health = 'healthy';
+
+  Future<String> getGender() async {
+    final pref = await SharedPreferences.getInstance();
+    final data = pref.getString('gender') ?? 'man';
+    return data;
+  }
+
+  String getHealth(List history) {
+    String overallHealthiness = 'healthy';
+    int healthy = 0;
+    int unHealthy = 0;
+    int moderatelyHealthy = 0;
+
+    for (final data in history) {
+      final health = data['health']['overall_healthiness']
+          .toString()
+          .toLowerCase()
+          .replaceAll(' ', '_');
+
+      print(data.keys);
+      if (health == 'healthy') {
+        healthy++;
+      } else if (health == 'unhealthy') {
+        unHealthy++;
+      } else {
+        moderatelyHealthy++;
+      }
+    }
+
+    if (healthy > unHealthy && healthy > moderatelyHealthy) {
+      overallHealthiness = 'healthy';
+    } else if (unHealthy > healthy && unHealthy > moderatelyHealthy) {
+      overallHealthiness = 'unhealthy';
+    } else {
+      overallHealthiness = 'moderately_healthy';
+    }
+
+    print(overallHealthiness);
+    print('Healthy: $healthy');
+    print('Unhealthy: $unHealthy');
+    print('Moderately Healthy: $moderatelyHealthy');
+    return overallHealthiness;
+  }
+
   Future<List<Map<String, dynamic>>> getHistory() async {
     final pref = await SharedPreferences.getInstance();
     final data = pref.getString('history');
@@ -27,6 +74,10 @@ class _HistoryState extends State<History> {
     final List<Map<String, dynamic>> history =
         List<Map<String, dynamic>>.from(jsonDecode(data));
     print(history);
+
+    gender = await getGender();
+    health = getHealth(history);
+
     return history;
   }
 
@@ -63,32 +114,55 @@ class _HistoryState extends State<History> {
             onRefresh: () async {
               setState(() {});
             },
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 30, left: 10, bottom: 20),
-                  child: Text('History',
-                      style: Theme.of(context).textTheme.displaySmall),
-                ),
-                for (final history in histories)
-                  Card(
-                    clipBehavior: Clip.antiAlias,
-                    shadowColor: Colors.transparent,
-                    child: ListTile(
-                      title: Text(
-                        DateFormat.yMMMMd()
-                            .format(DateTime.parse(history['date'])),
+                const SizedBox(height: 20),
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      subtitle: Text(DateFormat.Hm()
-                          .format(DateTime.parse(history['date']))),
-                      onTap: () {
-                        handleBottomSheet(
-                            context, history['data'], history['health']);
-                      },
                     ),
+                    Image.asset('assets/images/${gender}_$health.png',
+                        width: 150),
+                  ],
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 30, left: 10, bottom: 20),
+                        child: Text('History',
+                            style: Theme.of(context).textTheme.displaySmall),
+                      ),
+                      for (final history in histories)
+                        Card(
+                          clipBehavior: Clip.antiAlias,
+                          shadowColor: Colors.transparent,
+                          child: ListTile(
+                            title: Text(
+                              DateFormat.yMMMMd()
+                                  .format(DateTime.parse(history['date'])),
+                            ),
+                            subtitle: Text(DateFormat.Hm()
+                                .format(DateTime.parse(history['date']))),
+                            onTap: () {
+                              handleBottomSheet(
+                                  context, history['data'], history['health']);
+                            },
+                          ),
+                        ),
+                      const SizedBox(height: 4),
+                    ],
                   ),
-                const SizedBox(height: 4),
+                ),
               ],
             ),
           );

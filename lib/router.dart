@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nutrition/features/settings/views/profile/profile.dart';
 
 import 'features/camera/camera.dart';
 import 'features/home.dart';
-import 'features/privacy/privacy.dart';
+import 'features/settings/views/privacy/privacy.dart';
 import 'features/settings/views/support/support.dart';
 
 class AppRouter {
@@ -38,6 +39,13 @@ class AppRouter {
         pageBuilder: (context, state) => const MaterialPage(
           name: 'privacy',
           child: Privacy(),
+        ),
+      ),
+      GoRoute(
+        path: '/profile',
+        pageBuilder: (context, state) => const MaterialPage(
+          name: 'profile',
+          child: Profile(),
         ),
       ),
     ],

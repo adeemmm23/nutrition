@@ -11,16 +11,20 @@ class Privacy extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 20,
+            blurRadius: 10,
             spreadRadius: 5,
             offset: Offset(0, 0),
           ),
         ],
         borderRadius: BorderRadius.all(Radius.circular(30)),
       ),
-      child: const Scaffold(
+      child: Scaffold(
         // backgroundColor: Colors.white,
-        body: Center(
+        appBar: AppBar(
+          // backgroundColor: Theme.of(context).
+          title: const Text('Privacy'),
+        ),
+        body: const Center(
           child: Text('Privacy'),
         ),
       ),

@@ -36,7 +36,9 @@ class _SettingsState extends State<Settings> {
               ),
               leading: const Icon(Symbols.key_rounded, weight: 700),
               title: 'Change profile',
-              onTap: () {},
+              onTap: () {
+                context.push('/profile');
+              },
             ),
             const SettingsDivider(),
             SettingsListTile(
