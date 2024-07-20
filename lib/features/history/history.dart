@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -132,16 +133,18 @@ class _HistoryState extends State<History> {
                         width: 150),
                   ],
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30, left: 20, bottom: 20),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('History',
+                        style: Theme.of(context).textTheme.displaySmall),
+                  ),
+                ),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 30, left: 10, bottom: 20),
-                        child: Text('History',
-                            style: Theme.of(context).textTheme.displaySmall),
-                      ),
                       for (final history in histories)
                         Card(
                           clipBehavior: Clip.antiAlias,
