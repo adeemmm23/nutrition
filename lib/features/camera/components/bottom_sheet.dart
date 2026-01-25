@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 class DataBottomSheet extends StatelessWidget {
-  const DataBottomSheet(this.extractedData, this.healthEvaluation, {super.key});
+  const DataBottomSheet(
+      this.extractedData, this.healthEvaluation, this.allergiesFound,
+      {super.key});
 
   final Map<String, dynamic> extractedData;
   final Map<String, dynamic> healthEvaluation;
+  final Map<String, dynamic> allergiesFound;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +36,17 @@ class DataBottomSheet extends StatelessWidget {
             ListTile(
               title: Text(key.replaceAll('_', ' ').toLowerCase()),
               subtitle: Text(healthEvaluation[key] ?? 'N/A'),
+            ),
+          const Divider(
+            endIndent: 30,
+            indent: 30,
+            height: 40,
+          ),
+          const DataTitle('Allergies Found'),
+          for (var key in allergiesFound.keys)
+            ListTile(
+              title: Text(key.replaceAll('_', ' ').toLowerCase()),
+              subtitle: Text(allergiesFound[key] ?? 'N/A'),
             ),
         ],
       ),

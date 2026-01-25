@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:camera/camera.dart';
@@ -52,6 +50,15 @@ class _CameraAppState extends State<CameraApp> {
       Uri.parse("http://$ip:5000/"),
     );
 
+    print("loading...");
+    print(path);
+
+    const selectedAlergiesPrefsKey = 'selected_alergies';
+    final prefs = await SharedPreferences.getInstance();
+    final selectedAlergies =
+        prefs.getStringList(selectedAlergiesPrefsKey) ?? [];
+
+    request.fields['alergies'] = jsonEncode(selectedAlergies);
     request.headers.addAll(headers);
     request.files.add(
       http.MultipartFile(
@@ -64,6 +71,7 @@ class _CameraAppState extends State<CameraApp> {
     );
 
     try {
+      print(request.fields);
       final response = await request.send();
       file.delete();
 
@@ -116,6 +124,7 @@ class _CameraAppState extends State<CameraApp> {
     final Map<String, dynamic> data = jsonDecode(value);
     final Map<String, dynamic> extractedData = data['extracted_data'];
     final Map<String, dynamic> healthEvaluation = data['health_evaluation'];
+    final Map<String, dynamic> allergiesFound = data['allergen_evaluation'];
 
     final junk = prefs.getString('history') ?? "[]";
     final List history = jsonDecode(junk);
@@ -124,25 +133,28 @@ class _CameraAppState extends State<CameraApp> {
       'date': DateTime.now().toString(),
       'data': extractedData,
       'health': healthEvaluation,
+      'allergies': allergiesFound,
     });
 
     prefs.setString('history', jsonEncode(history));
 
     if (!mounted) return;
-    handleBottomSheet(context, extractedData, healthEvaluation);
+    handleBottomSheet(context, extractedData, healthEvaluation, allergiesFound);
   }
 
   void handleBottomSheet(
     BuildContext context,
     Map<String, dynamic> extractedData,
     Map<String, dynamic> healthEvaluation,
+    Map<String, dynamic> allergiesFound,
   ) {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
       showDragHandle: true,
       context: context,
-      builder: (context) => DataBottomSheet(extractedData, healthEvaluation),
+      builder: (context) =>
+          DataBottomSheet(extractedData, healthEvaluation, allergiesFound),
     );
   }
 

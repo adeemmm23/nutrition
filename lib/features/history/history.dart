@@ -86,13 +86,15 @@ class _HistoryState extends State<History> {
     BuildContext context,
     Map<String, dynamic> extractedData,
     Map<String, dynamic> healthEvaluation,
+    Map<String, dynamic> allergiesFound,
   ) {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
       showDragHandle: true,
       context: context,
-      builder: (context) => DataBottomSheet(extractedData, healthEvaluation),
+      builder: (context) =>
+          DataBottomSheet(extractedData, healthEvaluation, allergiesFound),
     );
   }
 
@@ -157,8 +159,8 @@ class _HistoryState extends State<History> {
                             subtitle: Text(DateFormat.Hm()
                                 .format(DateTime.parse(history['date']))),
                             onTap: () {
-                              handleBottomSheet(
-                                  context, history['data'], history['health']);
+                              handleBottomSheet(context, history['data'],
+                                  history['health'], history['allergies']);
                             },
                           ),
                         ),
