@@ -75,7 +75,14 @@ class _CameraAppState extends State<CameraApp> {
       final response = await request.send();
       file.delete();
 
-      if (response.statusCode != 200) return 'wrong';
+      if (response.statusCode != 200) {
+        print(response.statusCode);
+        print(await response.stream.bytesToString());
+        setState(() {
+          isSending = false;
+        });
+        return 'wrong';
+      }
       final data = await response.stream.bytesToString();
       print(data);
       setState(() {

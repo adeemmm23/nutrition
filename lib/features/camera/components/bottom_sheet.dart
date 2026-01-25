@@ -9,6 +9,12 @@ class DataBottomSheet extends StatelessWidget {
   final Map<String, dynamic> healthEvaluation;
   final Map<String, dynamic> allergiesFound;
 
+  printData() {
+    print('Extracted Data: $extractedData');
+    print('Health Evaluation: $healthEvaluation');
+    print('Allergies Found: $allergiesFound');
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -43,11 +49,22 @@ class DataBottomSheet extends StatelessWidget {
             height: 40,
           ),
           const DataTitle('Allergies Found'),
-          for (var key in allergiesFound.keys)
-            ListTile(
-              title: Text(key.replaceAll('_', ' ').toLowerCase()),
-              subtitle: Text(allergiesFound[key] ?? 'N/A'),
-            ),
+          ListTile(
+            title: const Text('Allergies'),
+            subtitle: Text(allergiesFound['contains_text'] ?? 'None'),
+          ),
+          ListTile(
+            title: const Text('Detected Allergies'),
+            subtitle: Text(allergiesFound['detected_allergens'].length == 0
+                ? 'None'
+                : allergiesFound['detected_allergens']?.join(', ')),
+          ),
+          ListTile(
+            title: const Text('Provided Allergens'),
+            subtitle: Text(allergiesFound['provided_allergens'].length == 0
+                ? 'None'
+                : allergiesFound['provided_allergens']?.join(', ')),
+          ),
         ],
       ),
     );
