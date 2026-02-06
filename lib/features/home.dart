@@ -47,6 +47,16 @@ class _HomeState extends State<Home> {
           Settings(),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.push('/ai');
+        },
+        child: const Icon(
+          Symbols.smart_toy_rounded,
+          weight: 600,
+          opticalSize: 28,
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         destinations: [
           NavigationDestination(

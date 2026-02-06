@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nutrition/features/settings/views/profile/profile.dart';
 
+import 'features/ai/ai.dart';
 import 'features/camera/camera.dart';
 import 'features/home.dart';
 import 'features/settings/views/privacy/privacy.dart';
@@ -25,6 +26,13 @@ class AppRouter {
           name: 'camera',
           fullscreenDialog: true,
           child: CameraApp(),
+        ),
+      ),
+      GoRoute(
+        path: '/ai',
+        pageBuilder: (context, state) => const MaterialPage(
+          name: 'ai',
+          child: AIPage(),
         ),
       ),
       GoRoute(
